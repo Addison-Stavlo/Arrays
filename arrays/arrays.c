@@ -28,6 +28,8 @@ Array *create_array(int capacity)
   array->count = 0;
   // Allocate memory for elements
   array->elements = malloc(sizeof(char **) * capacity);
+
+  return array;
 }
 
 /*****
@@ -37,9 +39,9 @@ void destroy_array(Array *arr)
 {
 
   // Free all elements
-  for (int i = 0; i < arr->capacity; i++)
+  for (int i = 0; i < arr->count; i++)
   {
-    arr->elements[i] = "0";
+    strcpy(arr->elements[i], "0");
     free(arr->elements[i]);
   }
   // Free array
@@ -52,9 +54,9 @@ void destroy_array(Array *arr)
  *****/
 void resize_array(Array *arr)
 {
-
   // Create a new element storage with double capacity
-
+  arr->capacity = arr->capacity * 2;
+  arr->elements = realloc(arr->elements, sizeof(char **) * arr->capacity);
   // Copy elements into the new storage
 
   // Free the old elements array (but NOT the strings they point to)
@@ -77,8 +79,15 @@ char *arr_read(Array *arr, int index)
 {
 
   // Throw an error if the index is greater or equal to than the current count
-
+  if (index > arr->count - 1)
+  {
+    perror("index not fount");
+  }
   // Otherwise, return the element at the given index
+  // else
+  // {
+  return arr->elements[index];
+  // }
 }
 
 /*****
@@ -88,14 +97,25 @@ void arr_insert(Array *arr, char *element, int index)
 {
 
   // Throw an error if the index is greater than the current count
-
+  if (index > arr->count)
+  {
+    perror("index > count");
+  }
   // Resize the array if the number of elements is over capacity
-
+  if (arr->count == arr->capacity)
+  {
+    resize_array(arr);
+  }
   // Move every element after the insert index to the right one position
-
+  for (int i = arr->count - 1; i >= index; i--)
+  {
+    arr->elements[i + 1] = arr->elements[i];
+  }
   // Copy the element and add it to the array
-
+  arr->elements[index] = malloc(strlen(element) * sizeof(char));
+  strcpy(arr->elements[index], element);
   // Increment count by 1
+  arr->count += 1;
 }
 
 /*****
@@ -105,11 +125,15 @@ void arr_append(Array *arr, char *element)
 {
 
   // Resize the array if the number of elements is over capacity
-  // or throw an error if resize isn't implemented yet.
-
+  if (arr->count == arr->capacity)
+  {
+    resize_array(arr);
+  }
   // Copy the element and add it to the end of the array
-
+  arr->elements[arr->count] = malloc(strlen(element) * sizeof(char));
+  strcpy(arr->elements[arr->count], element);
   // Increment count by 1
+  arr->count++;
 }
 
 /*****
@@ -152,13 +176,18 @@ int main(void)
 
   Array *arr = create_array(1);
 
+  arr_read(arr, 0);
+  // resize_array(arr);
+  printf("%d\n", arr->count);
   arr_insert(arr, "STRING1", 0);
+  printf("%s\n", arr_read(arr, 0));
   arr_append(arr, "STRING4");
-  arr_insert(arr, "STRING2", 0);
-  arr_insert(arr, "STRING3", 1);
-  arr_print(arr);
-  arr_remove(arr, "STRING3");
-  arr_print(arr);
+  printf("%s\n", arr_read(arr, 1));
+  // arr_insert(arr, "STRING2", 0);
+  // arr_insert(arr, "STRING3", 1);
+  // arr_print(arr);
+  // arr_remove(arr, "STRING3");
+  // arr_print(arr);
 
   destroy_array(arr);
 
