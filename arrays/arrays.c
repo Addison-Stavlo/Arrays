@@ -144,13 +144,26 @@ void arr_append(Array *arr, char *element)
  *****/
 void arr_remove(Array *arr, char *element)
 {
-
+  int first_index = -1;
   // Search for the first occurence of the element and remove it.
+  for (int i = 0; i < arr->count; i++)
+  {
+    if (strcmp(arr->elements[i], element) == 0)
+    {
+      printf("%s :  %s\n", arr->elements[i], element);
+      first_index = i;
+      break;
+    }
+  }
   // Don't forget to free its memory!
-
+  free(arr->elements[first_index]);
   // Shift over every element after the removed element to the left one position
-
+  for (int i = first_index; i < arr->count; i++)
+  {
+    arr->elements[i] = arr->elements[i + 1];
+  }
   // Decrement count by 1
+  arr->count--;
 }
 
 /*****
@@ -176,18 +189,13 @@ int main(void)
 
   Array *arr = create_array(1);
 
-  arr_read(arr, 0);
-  // resize_array(arr);
-  printf("%d\n", arr->count);
   arr_insert(arr, "STRING1", 0);
-  printf("%s\n", arr_read(arr, 0));
   arr_append(arr, "STRING4");
-  printf("%s\n", arr_read(arr, 1));
-  // arr_insert(arr, "STRING2", 0);
-  // arr_insert(arr, "STRING3", 1);
-  // arr_print(arr);
-  // arr_remove(arr, "STRING3");
-  // arr_print(arr);
+  arr_insert(arr, "STRING2", 0);
+  arr_insert(arr, "STRING3", 1);
+  arr_print(arr);
+  arr_remove(arr, "STRING3");
+  arr_print(arr);
 
   destroy_array(arr);
 
